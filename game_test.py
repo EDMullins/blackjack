@@ -169,6 +169,9 @@ def main():
 				card_key = random.randint(1, 14)
 				i += 1
 			i = 0
+			#take the loop out and make the first card drawn still affect the total but make it backwards
+			#get a temporary variable to hold the value of the card being turned around and when stand is hit I need to change the queue to the original card
+			#then I need to update the total with the new value
 			while i != 2:
 				if card_key < 11:
 					dealer_card_total += card_key
@@ -176,10 +179,10 @@ def main():
 					dealer_card_total += 10
 				elif card_key == 14:
 					# Ace card logic for the different values I would do a button but I suck so maybe I'll come back to it
-					if player_card_total + 11 > 21:
-						player_card_total += 1
+					if dealer_card_total + 11 > 21:
+						dealer_card_total += 1
 					else:
-						player_card_total += 11
+						dealer_card_total += 11
 						
 				dealer_card_total_text = smallfont.render('Total: ' + str(dealer_card_total), True, white)
 				#adds the card to card_queue
