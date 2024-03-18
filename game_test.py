@@ -4,8 +4,9 @@ import random
 
 '''
 To-Do
-1. get images working and then I can show all the cards at once
-2. Make sure only to show the second card that the dealer gets until player stands and only show the total of the one card shown
+1. Make sure only to show the second card that the dealer gets until player stands and only show the total of the one card shown
+2. Try to do classes
+3. bug fix (so much fun...)
 '''
 
 #After the game loop I need to have another loop to display the Dealers turn which happens automatically but same logic and he always stops at 16
@@ -34,7 +35,7 @@ def end(screen, smallfont, white, color_light, color_dark, width, height, mouse,
 						player_card_total += 11
 					
 				dealer_card_total_text = smallfont.render('Total: '+str(dealer_card_total), True, white)
-				dealer_card_queue.append(smallfont.render(cards[card_key], True, white))
+				dealer_card_queue.append(pygame.image.load(cards[card_key]).convert())
 				card_key = random.randint(1, 14)
 		
 		#gets the events from the player
@@ -51,11 +52,15 @@ def end(screen, smallfont, white, color_light, color_dark, width, height, mouse,
 		#Resests screen
 		screen.fill((40,160,40))
 		
-		screen.blit(dealer_card_queue[-1], (width/2, height-650))
-		screen.blit(dealer_card_total_text, (width-200, height-650))
+		#displays dealers cards and total
+		for card_index in range(len(dealer_card_queue)):
+			screen.blit(dealer_card_queue[card_index], ((360-((len(dealer_card_queue)/2)*100)+(card_index * 75)), 50))
+		screen.blit(dealer_card_total_text, (width-150, height-440))
 		
-		screen.blit(player_card_queue[-1], (width/2, height-225))
-		screen.blit(player_card_total_text, (width-200, height-225))
+		#displays players card and total
+		for card_index in range(len(player_card_queue)):
+			screen.blit(player_card_queue[card_index], ((360-((len(player_card_queue)/2)*100)+(card_index * 75)), 450))
+		screen.blit(player_card_total_text, (width-150, height-320))
 		
 		#Win or Lose logic
 		if player_card_total > 21:
@@ -120,11 +125,15 @@ def main():
 	stand_text = smallfont.render('Stand', True, white)
 
 	# dict with all my cards that has the random card key as the key 
-	cards = {1: '1', 2: '2', 3: '3',
-			4: '4', 5: '5', 6: '6',
-			7: '7', 8: '8', 9: '9',
-			10: '10', 11: 'Jack', 12: 'Queen',
-			13: 'King', 14: 'Ace'}
+	# need to turn my strings into file paths for my images
+	cards = {1: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\one_card.png", 2: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\two_card.png",
+			3: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\three_card.png", 4: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\four_card.png",
+			5: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\five_card.png", 6: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\six_card.png",
+			7: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\seven_card.png", 8: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\eight_card.png",
+			9: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\nine_card.png", 10: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\ten_card.png",
+			11: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\jack_card.png", 12: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\queen_card.png",
+			13: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\king_card.png", 14: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\ace_card.png", 
+			15: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\back_card.png"}
 	card_key = random.randint(1, 14)
 
 	#Players Card stuff
@@ -156,7 +165,7 @@ def main():
 						player_card_total += 11
 				player_card_total_text = smallfont.render('Total: ' + str(player_card_total), True, white)
 				#adds the card to card_queue
-				player_card_queue.append(smallfont.render(cards[card_key], True, white))
+				player_card_queue.append(pygame.image.load(cards[card_key]).convert())
 				card_key = random.randint(1, 14)
 				i += 1
 			i = 0
@@ -174,7 +183,7 @@ def main():
 						
 				dealer_card_total_text = smallfont.render('Total: ' + str(dealer_card_total), True, white)
 				#adds the card to card_queue
-				dealer_card_queue.append(smallfont.render(cards[card_key], True, white))
+				dealer_card_queue.append(pygame.image.load(cards[card_key]).convert())
 				card_key = random.randint(1, 14)
 				i += 1
 		#gets the events
@@ -203,7 +212,7 @@ def main():
 							
 					player_card_total_text = smallfont.render('Total: ' + str(player_card_total), True, white)
 					#adds the card to card_queue
-					player_card_queue.append(smallfont.render(cards[card_key], True, white))
+					player_card_queue.append(pygame.image.load(cards[card_key]).convert())
 					card_key = random.randint(1, 14)	
 		
 		#Everything below controls the visual aspect of my game
@@ -229,15 +238,17 @@ def main():
 		screen.blit(hit_text, (width-245, height-45))
 		screen.blit(stand_text , (width-115, height-45))	
 		
-		#Displays the last card added to card queue (will eventually need to loop through my card_queue when I start displaying multiple cards at a time)
-		for card in player_card_queue:
-			screen.blit(card, (width/2, height-225))
+		#Displays the cards for player
+		for card_index in range(len(player_card_queue)):
+			screen.blit(player_card_queue[card_index], ((360-((len(player_card_queue)/2)*100)+(card_index * 75)), 450))
 		#Displays the total values of all cards obtained
-		screen.blit(player_card_total_text, (width-200, height-225))
+		screen.blit(player_card_total_text, (width-150, height-320))
 		
-		#Displaying Dealers card queue and Total value
-		screen.blit(dealer_card_queue[-1], (width/2, height-650))
-		screen.blit(dealer_card_total_text, (width-200, height-650))
+		#Displays the cards for dealer
+		for card_index in range(len(dealer_card_queue)):
+			screen.blit(dealer_card_queue[card_index], ((360-((len(dealer_card_queue)/2)*100)+(card_index * 75)), 50))
+		#Displays the total values of all cards obtained
+		screen.blit(dealer_card_total_text, (width-150, height-440))
 		
 		if player_card_total > 21:
 			end(screen, smallfont, white, color_light, color_dark, width, height, mouse, cards, card_key, player_card_queue, player_card_total, player_card_total_text, dealer_card_queue, dealer_card_total, dealer_card_total_text) 
