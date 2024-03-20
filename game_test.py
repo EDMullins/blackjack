@@ -4,14 +4,29 @@ import random
 
 '''
 To-Do
-1. Make sure only to show the second card that the dealer gets until player stands and only show the total of the one card shown
+1. fix timing like 1 second before the dealer pulls his next card
+1. Beautify, fix colors maybe new font and mess with spacing
 2. Try to do classes
-3. bug fix (so much fun...)
 '''
 
-#After the game loop I need to have another loop to display the Dealers turn which happens automatically but same logic and he always stops at 16
+#After the game loop I need to have another loop to display the Dealers turn which happens automatically but same logic and they always stops at 16
 #Then I need to test users score to see if they won or not
-def end(screen, smallfont, white, color_light, color_dark, width, height, mouse, cards, card_key, player_card_queue, player_card_total, player_card_total_text, dealer_card_queue, dealer_card_total, dealer_card_total_text):
+def end(screen, smallfont, white, color_light, color_dark, width, height, mouse, cards, card_key, player_card_queue, player_card_total, player_card_total_text, dealer_card_queue, dealer_card_total, dealer_card_total_text, dealer_back_card):
+	#flips the backwards card given to the dealer before the loop runs because I need to only run once
+	dealer_card_queue[0] = pygame.image.load(cards[dealer_back_card]).convert()
+	if dealer_back_card < 11:
+		dealer_card_total += dealer_back_card
+	elif dealer_back_card == 11 or dealer_back_card == 12 or dealer_back_card == 13:
+		dealer_card_total += 10
+	elif dealer_back_card == 14:
+		# Ace card logic for the different values I would do a button but I suck so maybe I'll come back to it
+		if dealer_card_total + 11 > 21:
+			dealer_card_total += 1
+		else:
+			dealer_card_total += 11
+	
+	#Updates the text for the card total
+	dealer_card_total_text = smallfont.render('Total: '+str(dealer_card_total), True, white)
 	while True:
 		#self explanatory 
 		win_text = smallfont.render('You Win', True, white)
@@ -19,6 +34,9 @@ def end(screen, smallfont, white, color_light, color_dark, width, height, mouse,
 		lose_text = smallfont.render('You Lost', True, white)
 		replay_text = smallfont.render('Replay', True, white)
 		quit_text = smallfont.render('Quit', True, white)
+		
+		#I want to wait a little bit before drawing each card
+		pygame.time.wait(50)
 		
 		#Dealers turn logic after stand is hit
 		if player_card_total <= 21:
@@ -29,10 +47,10 @@ def end(screen, smallfont, white, color_light, color_dark, width, height, mouse,
 					dealer_card_total += 10
 				elif card_key == 14:
 					# Ace card logic for the different values I would do a button but I suck so maybe I'll come back to it
-					if player_card_total + 11 > 21:
-						player_card_total += 1
+					if dealer_card_total + 11 > 21:
+						dealer_card_total += 1
 					else:
-						player_card_total += 11
+						dealer_card_total += 11
 					
 				dealer_card_total_text = smallfont.render('Total: '+str(dealer_card_total), True, white)
 				dealer_card_queue.append(pygame.image.load(cards[card_key]).convert())
@@ -88,9 +106,6 @@ def end(screen, smallfont, white, color_light, color_dark, width, height, mouse,
 		
 		pygame.display.update()
 
-#Before my game loop starts I need to give the Player and the Dealer 2 cards and store those values in seperate totals
-#Ok I know theres a better way to do this but I dont want to make tht complex of a loop for all 4 cards'''
-		
 #Game Logic	
 def main():
 	# initializing the constructor 
@@ -124,8 +139,7 @@ def main():
 	hit_text = smallfont.render('Hit' , True , white) 
 	stand_text = smallfont.render('Stand', True, white)
 
-	# dict with all my cards that has the random card key as the key 
-	# need to turn my strings into file paths for my images
+	# dict with all my cards that has the random card key as the key
 	cards = {1: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\one_card.png", 2: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\two_card.png",
 			3: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\three_card.png", 4: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\four_card.png",
 			5: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\five_card.png", 6: r"C:\Users\ethan\Desktop\Projects\Python\blackjack\six_card.png",
@@ -172,23 +186,26 @@ def main():
 			#take the loop out and make the first card drawn still affect the total but make it backwards
 			#get a temporary variable to hold the value of the card being turned around and when stand is hit I need to change the queue to the original card
 			#then I need to update the total with the new value
-			while i != 2:
-				if card_key < 11:
-					dealer_card_total += card_key
-				elif card_key == 11 or card_key == 12 or card_key == 13:
-					dealer_card_total += 10
-				elif card_key == 14:
-					# Ace card logic for the different values I would do a button but I suck so maybe I'll come back to it
-					if dealer_card_total + 11 > 21:
-						dealer_card_total += 1
-					else:
-						dealer_card_total += 11
+			dealer_back_card = card_key
+			dealer_card_queue.append(pygame.image.load(cards[15]).convert())
+			card_key = random.randint(1, 14)
+				
+			if card_key < 11:
+				dealer_card_total += card_key
+			elif card_key == 11 or card_key == 12 or card_key == 13:
+				dealer_card_total += 10
+			elif card_key == 14:
+				# Ace card logic for the different values I would do a button but I suck so maybe I'll come back to it
+				if dealer_card_total + 11 > 21:
+					dealer_card_total += 1
+				else:
+					dealer_card_total += 11
 						
-				dealer_card_total_text = smallfont.render('Total: ' + str(dealer_card_total), True, white)
-				#adds the card to card_queue
-				dealer_card_queue.append(pygame.image.load(cards[card_key]).convert())
-				card_key = random.randint(1, 14)
-				i += 1
+			dealer_card_total_text = smallfont.render('Total: ' + str(dealer_card_total), True, white)
+			#adds the card to card_queue
+			dealer_card_queue.append(pygame.image.load(cards[card_key]).convert())
+			card_key = random.randint(1, 14)	
+				
 		#gets the events
 		for ev in pygame.event.get(): 
 			mouse = pygame.mouse.get_pos() 
@@ -199,7 +216,7 @@ def main():
 				if width-150 <= mouse[0] <= width-10 and height-50 <= mouse[1] <= height-10:
 					#the stand button calls the end function which runs the dealers turn and the logic for the end screen
 					pygame.display.update()
-					end(screen, smallfont, white, color_light, color_dark, width, height, mouse, cards, card_key, player_card_queue, player_card_total, player_card_total_text, dealer_card_queue, dealer_card_total, dealer_card_total_text)
+					end(screen, smallfont, white, color_light, color_dark, width, height, mouse, cards, card_key, player_card_queue, player_card_total, player_card_total_text, dealer_card_queue, dealer_card_total, dealer_card_total_text, dealer_back_card)
 				if width-300 <= mouse[0] <= width-160 and height-50 <= mouse[1] <= height-10:
 					#finds the value of the card and stores it in card_total
 					if card_key < 11:
@@ -254,7 +271,7 @@ def main():
 		screen.blit(dealer_card_total_text, (width-150, height-440))
 		
 		if player_card_total > 21:
-			end(screen, smallfont, white, color_light, color_dark, width, height, mouse, cards, card_key, player_card_queue, player_card_total, player_card_total_text, dealer_card_queue, dealer_card_total, dealer_card_total_text) 
+			end(screen, smallfont, white, color_light, color_dark, width, height, mouse, cards, card_key, player_card_queue, player_card_total, player_card_total_text, dealer_card_queue, dealer_card_total, dealer_card_total_text, dealer_back_card) 
 		# updates the frames of the game 
 		pygame.display.update()
 
